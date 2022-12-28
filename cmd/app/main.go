@@ -2,15 +2,20 @@ package main
 
 import (
 	"log"
-	"shtrafobot/internal/config"
+	"shtrafobot/internal/configs"
 	bot "shtrafobot/internal/telegram"
 )
 
 func main() {
-	cfg, err := config.NewConfig()
+	cfg, err := configs.NewConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	bot.Init(cfg.TelegramToken)
+	tb := bot.NewTelegramBot(cfg.TelegramToken)
+
+	err = tb.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
