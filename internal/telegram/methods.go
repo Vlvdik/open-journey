@@ -1,56 +1,45 @@
 package bot
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"io/ioutil"
+	"context"
+	"errors"
 	"log"
-	"os"
+	"os/exec"
+	"strings"
+	"time"
 )
 
-func convertPhoto(filepath string) tgbotapi.FileBytes {
-	photo, err := ioutil.ReadFile(filepath)
-	if err != nil {
-		log.Fatal(err)
-	}
+func getPrompt(rawPrompt string) string {
+	return strings.Join(strings.Split(rawPrompt, " ")[1:], "")
+}
 
-	return tgbotapi.FileBytes{
-		Name:  "picture",
-		Bytes: photo,
+func getPromptURL(rawPrompt string) (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 150*time.Second)
+	defer cancel()
+
+	imgChn := make(chan string)
+
+	prompt := getPrompt(rawPrompt)
+	go useImagine(imgChn, prompt)
+
+	select {
+	case URL := <-imgChn:
+		defer close(imgChn)
+
+		return URL, nil
+	case <-ctx.Done():
+		return "", errors.New(errImagineTimeOut)
 	}
 }
 
-func deletePhoto(filepath string) error {
-	err := os.Remove(filepath)
-	if err != nil {
-		return err
-	}
+func useImagine(imgChn chan string, prompt string) {
+	script := "from app.model import imagine; print(imagine('" + prompt + "'))"
+	cmd := exec.Command("python", "-c", script)
 
-	return nil
-}
-
-func sendMessage(bot *tgbotapi.BotAPI, chat int64, msgID int, text string) {
-	res := tgbotapi.NewMessage(chat, text)
-	res.ReplyToMessageID = msgID
-
-	_, err := bot.Send(res)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func sendPhoto(bot *tgbotapi.BotAPI, chat int64, msgID int) {
-	photoFileBytes := convertPhoto("internal/upload/обэмэ.jpg")
-
-	uploadedPhoto := tgbotapi.NewPhoto(chat, photoFileBytes)
-	uploadedPhoto.ReplyToMessageID = msgID
-
-	_, err := bot.Send(uploadedPhoto)
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = deletePhoto("internal/upload/обэмэ.jpg")
-	if err != nil {
-		log.Fatal(err)
-	}
+	imgChn <- string(out)
 }
