@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const help = "Привет!\nЧтобы получить картинку по запросу используй следующий синтаксис:\n/imagine <ваш запрос>\nВ целях соблюдения закона и гуманности, нейросеть не будет отображать результаты по запросам эротического и насильственного характера"
+
 type handlers interface {
 	sendMessage(chat int64, msgID int, text string)
 	sendPhoto(chat int64, msgID int, text string)
@@ -57,17 +59,12 @@ func (tb *TelegramBot) handleUpdates(updates tgbotapi.UpdatesChannel) {
 			log.Printf("[%s] %s", username, msg)
 
 			switch words[0] {
-			case "/ping":
-				tb.sendMessage(chat, msgID, "pong")
-			case "/send":
-				if len(words) > 1 {
-					tb.sendMessage(chat, msgID, "Ожидайте, ваш запрос принят")
-					go tb.sendPhoto(chat, msgID, msg)
-				} else {
-					tb.sendMessage(chat, msgID, errInvalidPrompt)
-				}
+			case "/help":
+				tb.sendMessage(chat, msgID, help)
+			case "/imagine":
+				go tb.sendImaginePhoto(chat, msgID, msg)
 			default:
-				tb.sendMessage(chat, msgID, errUnknownCommand)
+				tb.sendMessage(chat, msgID, ErrUnknownCommand)
 			}
 		}
 	}
