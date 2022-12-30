@@ -5,6 +5,14 @@ import (
 	"log"
 )
 
+func IsPrompt(text string) bool {
+	if len(text) > 1 {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (tb *TelegramBot) sendMessage(chat int64, msgID int, text string) {
 	res := tgbotapi.NewMessage(chat, text)
 	res.ReplyToMessageID = msgID
@@ -15,19 +23,30 @@ func (tb *TelegramBot) sendMessage(chat int64, msgID int, text string) {
 	}
 }
 
-func (tb *TelegramBot) sendPhoto(chat int64, msgID int, text string) {
-	photoURL, err := getPromptURL(text)
+func (tb *TelegramBot) sendPhoto(chat int64, msgID int, photoURL string) {
+	convertedPhoto := tgbotapi.FileURL(photoURL)
+
+	uploadedPhoto := tgbotapi.NewPhoto(chat, convertedPhoto)
+	uploadedPhoto.ReplyToMessageID = msgID
+
+	_, err := tb.bot.Send(uploadedPhoto)
 	if err != nil {
-		tb.sendMessage(chat, msgID, errImagineTimeOut)
-	} else {
-		convertedPhoto := tgbotapi.FileURL(photoURL)
+		log.Fatal(err)
+	}
+}
 
-		uploadedPhoto := tgbotapi.NewPhoto(chat, convertedPhoto)
-		uploadedPhoto.ReplyToMessageID = msgID
+func (tb *TelegramBot) sendImaginePhoto(chat int64, msgID int, text string) {
+	if IsPrompt(text) {
+		tb.sendMessage(chat, msgID, "Ожидайте, ваш запрос принят")
 
-		_, err = tb.bot.Send(uploadedPhoto)
+		photoURL, err := GetPromptURL(text)
 		if err != nil {
-			log.Fatal(err)
+			tb.sendMessage(chat, msgID, ErrImagineTimeOut)
+		} else {
+			tb.sendPhoto(chat, msgID, photoURL)
 		}
+
+	} else {
+		tb.sendMessage(chat, msgID, ErrInvalidPrompt)
 	}
 }
