@@ -9,17 +9,17 @@ import (
 	"time"
 )
 
-func getPrompt(rawPrompt string) string {
-	return strings.Join(strings.Split(rawPrompt, " ")[1:], "")
+func getPrompt(text string) string {
+	return strings.Join(strings.Split(text, " ")[1:], "")
 }
 
-func getPromptURL(rawPrompt string) (string, error) {
+func GetPromptURL(text string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 150*time.Second)
 	defer cancel()
 
 	imgChn := make(chan string)
 
-	prompt := getPrompt(rawPrompt)
+	prompt := getPrompt(text)
 	go useImagine(imgChn, prompt)
 
 	select {
@@ -28,7 +28,7 @@ func getPromptURL(rawPrompt string) (string, error) {
 
 		return URL, nil
 	case <-ctx.Done():
-		return "", errors.New(errImagineTimeOut)
+		return "", errors.New(ErrImagineTimeOut)
 	}
 }
 
