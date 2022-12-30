@@ -5,14 +5,6 @@ import (
 	"log"
 )
 
-func IsPrompt(text string) bool {
-	if len(text) > 1 {
-		return true
-	} else {
-		return false
-	}
-}
-
 func (tb *TelegramBot) sendMessage(chat int64, msgID int, text string) {
 	res := tgbotapi.NewMessage(chat, text)
 	res.ReplyToMessageID = msgID
