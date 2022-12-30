@@ -1,7 +1,7 @@
 package bot
 
 const (
-	errUnknownCommand = "Invalid Command"
-	errInvalidPrompt  = "Invalid Prompt"
-	errImagineTimeOut = "Prompt timeout"
+	ErrUnknownCommand = "Invalid Command"
+	ErrInvalidPrompt  = "Invalid Prompt"
+	ErrImagineTimeOut = "Prompt timeout"
 )
