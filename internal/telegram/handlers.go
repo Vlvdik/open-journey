@@ -28,17 +28,18 @@ func (tb *TelegramBot) sendPhoto(chat int64, msgID int, photoURL string) {
 }
 
 func (tb *TelegramBot) sendImaginePhoto(chat int64, msgID int, text string) {
-	if IsPrompt(text) {
-		tb.sendMessage(chat, msgID, "Ожидайте, ваш запрос принят")
+	tb.sendMessage(chat, msgID, "Ожидайте, ваш запрос принят")
 
-		photoURL, err := GetPromptURL(text)
-		if err != nil {
-			tb.sendMessage(chat, msgID, ErrImagineTimeOut)
-		} else {
-			tb.sendPhoto(chat, msgID, photoURL)
-		}
+	translatedPrompt, err := translate(tb.apiKey, text)
+	if err != nil {
+		tb.sendMessage(chat, msgID, err.Error())
+		return
+	}
 
+	photoURL, err := GetPromptURL(translatedPrompt)
+	if err != nil {
+		tb.sendMessage(chat, msgID, ErrImagineTimeOut)
 	} else {
-		tb.sendMessage(chat, msgID, ErrInvalidPrompt)
+		tb.sendPhoto(chat, msgID, photoURL)
 	}
 }
