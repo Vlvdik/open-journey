@@ -12,7 +12,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tb := bot.NewTelegramBot(cfg.TelegramToken)
+	tb := bot.NewTelegramBot(cfg.TelegramToken, cfg.XRapidAPIKey)
 
 	err = tb.Start()
 	if err != nil {
