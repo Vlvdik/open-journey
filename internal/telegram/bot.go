@@ -26,17 +26,18 @@ type Functions interface {
 }
 
 type TelegramBot struct {
-	bot *tgbotapi.BotAPI
+	bot    *tgbotapi.BotAPI
+	apiKey string
 	Functions
 }
 
-func NewTelegramBot(token string) *TelegramBot {
+func NewTelegramBot(token, apikey string) *TelegramBot {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return &TelegramBot{bot: bot}
+	return &TelegramBot{bot: bot, apiKey: apikey}
 }
 
 func (tb *TelegramBot) initUpdates() tgbotapi.UpdatesChannel {
