@@ -1,1 +1,2 @@
-TELEGRAM_API_TOKEN = "TOKEN"
+telegram_api_token = "TOKEN"
+x_rapid_api_key = "KEY"
