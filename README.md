@@ -9,9 +9,9 @@
 git clone https://github.com/Vlvdik/openjorney
 ```
 ### 2) Configurate your config file's
-```
-1) Get your telegram token (BotFather)
-2) Get your api key on the site [https://rapidapi.com/googlecloud/api/google-translate1/]
-   (used for translation)
-3) Set model hyperparam's
-```
+
+#### - Get your telegram token (BotFather)
+#### - Get your api key on the site [https://rapidapi.com/googlecloud/api/google-translate1/] *(used for translation)*
+#### - Set model hyperparam's
+---
+##### **Done** 🎉
