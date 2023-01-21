@@ -6,6 +6,7 @@ import (
 
 type Config struct {
 	TelegramToken string `toml:"telegram_token"`
+	XRapidAPIKey  string `toml:"x_rapid_api_key"`
 }
 
 func (cfg *Config) decodeFromToml() error {
