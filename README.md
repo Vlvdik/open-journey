@@ -1,4 +1,4 @@
-# Оpenjorney
+# Оpenjourney
 ### A simple telegram bot that uses the stable diffusion model to generate images from a user's text request. 
 ### In this version, model works correctly only in **Russian**
 ##### ***(If you don't want to be disappointed, use this language)***
